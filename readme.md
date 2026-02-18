@@ -24,7 +24,13 @@ help required from doctors, additional assistance system for patients (feedback 
 ## Process
 
 - create folder structure in template.sh and run ./template.sh to create project structure as required. if required permissions are not available, run chmod +x template.sh to give additional permissions.
-- 
+- requirements.txt file contains packages to install. For this project, we have to install in editable format. we wanted our project to work like a python package and so setup.py is required.
+- install the requirments using command "pip install -r requirements.txt"
+- next notebook experiment is done where complete code for pipeline is run on jupyter notebook and executed to check if it is working fine or not
+- Next in modular coding, we have created separate files for each component of the pipeline and imported them in the main file.
+- then we created html and css files for frontend development.
+- created app using flask framework and ran on local host
+
 
 
 ## Other info:

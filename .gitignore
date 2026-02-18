@@ -1,2 +1,4 @@
 # generic ones
+.env
 .idea
+*/__pycache__/*
