@@ -26,11 +26,28 @@ help required from doctors, additional assistance system for patients (feedback 
 - create folder structure in template.sh and run ./template.sh to create project structure as required. if required permissions are not available, run chmod +x template.sh to give additional permissions.
 - requirements.txt file contains packages to install. For this project, we have to install in editable format. we wanted our project to work like a python package and so setup.py is required.
 - install the requirments using command "pip install -r requirements.txt"
-- next notebook experiment is done where complete code for pipeline is run on jupyter notebook and executed to check if it is working fine or not
+- next notebook experiment is done where complete code for pipeline is run on jupyter notebook and executed to check if it is working fine or not. use store_index to store the embeddings in the vector database.
 - Next in modular coding, we have created separate files for each component of the pipeline and imported them in the main file.
 - then we created html and css files for frontend development.
-- created app using flask framework and ran on local host
-
+- created app using flask framework and ran on local host by using app.py file.
+- pushed the code to github
+- conversation buffer memory (on langchain) also can be added here
+- from aws, an iam user "medical-chatbot" is created with ec2 and ecr permissions.
+- for the user, under security credentials, created accesskeys (access and secret access key) for cli authentication.
+- Elastic container registry (ECR) -> private repository -> medicalbot and saved URI
+- EC2 instance -> create in us-east-1 region and name as medical-machine (ubuntu-t2.large)(keyvalue pari-medicalchatbot-RSA)(HTTPS, HTTP, SSH) (30gb storage)
+- connect to ec2:
+  - update machine (sudo apt-get upgrade -y and sudo apt-get upgrade) 
+  - install docker: 
+    - curl -fsSL https://get.docker.com -o get-docker.sh
+    - sudo sh get-docker.sh
+    - sudo usermod -aG docker ubuntu
+    - newgrp docker
+    - docker --version
+- Now setup github actions (CI/CD): go to github repository and settings -> actions -> runners -> new self-hosted runner -> select linux -> run commands mentioned in download and configure one by one in ec2 instance(name of runner: self-hosted). github will be connected to aws and once github has any pushes, aws will automatically deploy the code.
+- for authentication, secrets have to be added to github repository: secrets and variables -> actions -> AWS access keys, default region name, ecr repo name, pinecone api key, openai api key
+- Create a file for Dockerfile and write commands there
+- Create a file for github actions and 
 
 
 ## Other info:
