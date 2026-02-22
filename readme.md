@@ -47,7 +47,9 @@ help required from doctors, additional assistance system for patients (feedback 
 - Now setup github actions (CI/CD): go to github repository and settings -> actions -> runners -> new self-hosted runner -> select linux -> run commands mentioned in download and configure one by one in ec2 instance(name of runner: self-hosted). github will be connected to aws and once github has any pushes, aws will automatically deploy the code.
 - for authentication, secrets have to be added to github repository: secrets and variables -> actions -> AWS access keys, default region name, ecr repo name, pinecone api key, openai api key
 - Create a file for Dockerfile and write commands there
-- Create a file for github actions and 
+- Create a file for github actions
+- application is running on 8080, so got to ec2 and then security groups -> inbound rules -> add rule for port 8080. copy ip from instance and add :8080 and access chatbot
+- application is now live(running in docker container on ec2).
 
 
 ## Other info:
