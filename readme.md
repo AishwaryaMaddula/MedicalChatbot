@@ -1,64 +1,238 @@
-# Medical chatbot
-## About:
-help required from doctors, additional assistance system for patients (feedback or suggestions based on patient's requirements)
+# AI-Powered Medical Assistant/Chatbot using RAG, LangChain & AWS
 
-## RAG Architecture:
+---
+### About The Project
 
-- Load documents(Medical document PDF)
-- Extract documents of the book
-- Chunking the documents
-- Embedding Model
-- Vector Embeddings
-- Pinecone Vector Database(Knowledge Base - Indexing and Similarity Search can be done here) (custom data source)
-- LLM Model
-- Chatbot
+This project implements a real-world production-style AI chatbot system that:
+- Loads medical PDFs
+- Extracts documents from the PDFs
+- Chunks the documents
+- Converts them into vector embeddings
+- Stores embeddings in Pinecone
+- Retrieves relevant context for user queries
+- Uses an LLM to generate medically grounded responses
+- Serves a web interface via Flask
+- Deploys to AWS using Docker, ECR, and EC2
 
-# Tools Used:
-- Programming Language: Python
-- LLM model: OpenAI GPT
-- Orchestration framework: Langchain
-- Vector database : Pinecone
-- Frontend and Backend development : Flask
-- Deployment : AWS -> CI/CD
+Unlike a generic chatbot, this system uses a custom medical knowledge base, making responses more relevant and context-driven. 
+<br>
+This basically provides all the help required from doctors, additional assistance system for patients
 
-## Process
+---
+### Project High-Level Architecture
 
-- create folder structure in template.sh and run ./template.sh to create project structure as required. if required permissions are not available, run chmod +x template.sh to give additional permissions.
-- requirements.txt file contains packages to install. For this project, we have to install in editable format. we wanted our project to work like a python package and so setup.py is required.
-- install the requirments using command "pip install -r requirements.txt"
-- next notebook experiment is done where complete code for pipeline is run on jupyter notebook and executed to check if it is working fine or not. use store_index to store the embeddings in the vector database.
-- Next in modular coding, we have created separate files for each component of the pipeline and imported them in the main file.
-- then we created html and css files for frontend development.
-- created app using flask framework and ran on local host by using app.py file.
-- pushed the code to github
-- conversation buffer memory (on langchain) also can be added here
-- from aws, an iam user "medical-chatbot" is created with ec2 and ecr permissions.
-- for the user, under security credentials, created accesskeys (access and secret access key) for cli authentication.
-- Elastic container registry (ECR) -> private repository -> medicalbot and saved URI
-- EC2 instance -> create in us-east-1 region and name as medical-machine (ubuntu-t2.large)(keyvalue pari-medicalchatbot-RSA)(HTTPS, HTTP, SSH) (30gb storage)
-- connect to ec2:
-  - update machine (sudo apt-get upgrade -y and sudo apt-get upgrade) 
-  - install docker: 
-    - curl -fsSL https://get.docker.com -o get-docker.sh
-    - sudo sh get-docker.sh
-    - sudo usermod -aG docker ubuntu
-    - newgrp docker
-    - docker --version
-- Now setup github actions (CI/CD): go to github repository and settings -> actions -> runners -> new self-hosted runner -> select linux -> run commands mentioned in download and configure one by one in ec2 instance(name of runner: self-hosted). github will be connected to aws and once github has any pushes, aws will automatically deploy the code.
-- for authentication, secrets have to be added to github repository: secrets and variables -> actions -> AWS access keys, default region name, ecr repo name, pinecone api key, openai api key
-- Create a file for Dockerfile and write commands there
-- Create a file for github actions
-- application is running on 8080, so got to ec2 and then security groups -> inbound rules -> add rule for port 8080. copy ip from instance and add :8080 and access chatbot
-- application is now live(running in docker container on ec2).
+**Tech Stack**
+- Backend & Application:
+  1. Python – Core programming language
+  2. Flask – Web framework for serving chatbot UI
+  3. LangChain – RAG orchestration and chain management
+  4. OpenAI API – LLM and embeddings
+  5. Pinecone – Vector database for similarity search
+- Data Processing:
+  1. PDF Loader (LangChain)
+  2. Text Splitters (Chunking strategy)
+  3. OpenAI Embedding Models
+- Frontend: Basic client-side interaction via Flask routing
+  1. HTML (Jinja Templates)
+  2. CSS (Static assets)
+- DevOps & Cloud:
+  1. Docker – Containerization
+  2. Amazon ECR – Container registry
+  3. Amazon EC2 – Hosting environment
+  4. IAM – Access management
+  5. GitHub Actions – CI/CD automation
+- Development Tools:
+  1. VS Code / PyCharm
+  2. AWS CLI
+  3. Git & GitHub
+  4. Virtual Environment (venv)
 
+**Architecture Components**
 
-## Other info:
-- LLM models can be used in 3 ways:
-  - Inference mode: ask prompt and get response (no learning)
-  - Fine-Tuning mode: modify the model weights here. train model on new labeled data, adjust internal parameters, specialise it for a domain eg: RL using human feedback, Instruction tuning, LoRA/PEFT , Full fine-tuning (learning)(lots of data, high computational power, cost - disadvantages)
-  - RAG: keep model fixed, connect to external data sources (knowledge base), retreive docuemnts, use tools/APIs, inject fresh context (knowledge based using custom data and connect to LLM)
-- LLM's have context window which means they can only remember a limited amount of history i., 8192 tokens (tokens are the smallest unit of information)
-- what is context window? - working memory of the model
-- context window means how much information the model can use to make a decision.
+|Layer|Component|Responsibility|
+|----------|--------|-----------|
+|Presentation Layer|Flask + HTML Templates|User interface & request handling|
+|Application Layer|LangChain|Orchestrates RAG pipeline|
+|Embedding Layer|OpenAI Embeddings|Converts text to vectors|
+|Retrieval Layer|Pinecone|Vector similarity search|
+|Generation Layer|OpenAI GPT|Response generation|
+|Deployment Layer|Docker + AWS|Containerization & hosting|
 
+**Architecture Flowchart**
+
+```mermaid
+flowchart TD
+    A["User (Browser)"]
+    B["Flask Web Application (app.py)"]
+    C["LangChain RAG Pipeline"]
+    D["Retriever (Pinecone Vector Store)"]
+    E["Relevant Medical Document Chunks"]
+    F["OpenAI LLM (Response Generation)"]
+    G["Response Returned to User"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+```
+
+**Deployment Architecture (AWS)**
+
+```mermaid
+flowchart TD
+    A["Developer Machine"]
+    B["Docker Image"]
+    C["Amazon ECR (Image Registry)"]
+    D["Amazon EC2 (Ubuntu Instance)"]
+    E["Running Docker Container"]
+    F["Public IP (Accessible Web App)"]
+    
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+```
+
+<u>CI/CD</u>:
+
+GitHub Push → GitHub Actions → Build → Push to ECR → Deploy to EC2
+
+---
+### Project Structure
+
+```
+MedicalChatbot/
+│
+├── .github/workflows/     # CI/CD configuration
+├── data/                  # Medical documents (PDFs)
+├── research/              # Experiment notebooks
+├── src/                   # Core logic
+├── static/                # CSS / frontend assets
+├── templates/             # HTML templates
+├── app.py                 # Flask entrypoint
+├── store_index.py         # Embedding & indexing script
+├── Dockerfile
+├── requirements.txt
+├── setup.py
+└── README.md
+```
+
+---
+### Local Setup
+1. Clone Repository:
+```bash
+git clone https://github.com/AishwaryaMaddula/MedicalChatbot.git
+cd MedicalChatbot
+```
+2. Create Virtual Environment:
+```bash
+python -m venv venv
+source venv/bin/activate   # Mac/Linux
+venv\Scripts\activate      # Windows
+```
+3. Install Dependencies:
+```bash
+pip install -r requirements.txt
+```
+4. Environment Variables: Create a .env file and add following keys:
+```bash
+OPENAI_API_KEY=
+PINECONE_API_KEY=
+```
+**Make sure .env is in .gitignore.**
+
+---
+### Running the Project
+
+1. Create Pinecone Index:
+
+Run ingestion script to embed and store documents:
+```bash
+python store_index.py
+```
+2. Start Flask App:
+```bash
+python app.py
+```
+Visit: `http://localhost:8080` to view the application
+
+**AWS Deployment (Production)**
+
+Local → Docker → Amazon ECR → EC2 → Running Container
+
+1. Create IAM User:
+   - This user performs:
+     - Build docker image of the source code
+     - Push docker image to ECR 
+     - Launch EC2 
+     - Pull image from ECR in EC2 
+     - Launch docker image in EC2
+   - Name it as "medical-chatbot" 
+   - Grant following policies:
+      - EC2 access: It is virtual machine<br>
+     ```bash
+      AmazonEC2FullAccess
+     ```
+      - ECR: Elastic Container registry to save your docker image in aws<br>
+     ```bash
+      AmazonEC2ContainerRegistryFullAccess
+     ```
+   - Configure AWS CLI:<br> 
+     ```bash
+     aws configure
+     ```
+2. For the created user, generate access key and secret key.
+3. Create ECR Repository and copy repository URI:
+```bash
+<aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/medical-chatbot
+```
+4. Create EC2 Instance (region can be us-east-1. ensure HTTPS, HTTP and SSH authentication types are selected)
+5. Launch EC2 Instance and Install Docker on EC2:
+```bash
+#optinal
+
+sudo apt-get update -y
+
+sudo apt-get upgrade
+
+#required
+
+curl -fsSL https://get.docker.com -o get-docker.sh
+
+sudo sh get-docker.sh
+
+sudo usermod -aG docker ubuntu
+
+newgrp docker
+```
+6. Configure EC2 as self hosted runner: Go to <br>`Github Repository Settings -> Actions -> Runners -> New Self-hosted runner -> Select Linux -> run displayed commands in EC2 one by one `
+7. Setup github secrets:
+   - AWS_ACCESS_KEY_ID
+   - AWS_SECRET_ACCESS_KEY
+   - AWS_DEFAULT_REGION
+   - ECR_REPO
+   - PINECONE_API_KEY
+   - OPENAI_API_KEY
+8. Create yaml file that contains CI/CD workflow: `
+.github/workflows/cicd.yml`<br>
+Add template in yaml file to include following:
+- Trigger<br>
+Run on push to main
+- CI Job
+   - Checkout repository
+   - Configure AWS credentials
+   - Login to Amazon ECR
+   - Build Docker image
+   - Tag image
+   - Push image to ECR
+- CD Job
+   - Depend on CI job
+   - Run on self-hosted (EC2) runner
+   - Login to ECR
+   - Pull latest image
+   - Run Docker container
+   - Expose application port
 
